@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+
+{% block bgcolor %}white{% endblock %}
+
+
+{% block body %}
+    <img src="/Schedule/pub/schedule.gif">
+
+    <h1>Euro-XR-RP schedule for {{ month_name }} {{ year }}</h1>
+
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>{% trans "Monday" %}</th>
+                <th>{% trans "Tuesday" %}</th>
+                <th>{% trans "Wednesday" %}</th>
+                <th>{% trans "Thursday" %}</th>
+                <th>{% trans "Friday" %}</th>
+                <th>{% trans "Saturday" %}</th>
+                <th>{% trans "Sunday" %}</th>
+            </tr>
+        </thead>
+        {% for week in calendar %}
+            <tr>
+            {% for date in week %}
+                <td class="{% if date.month != month %}text-muted{% endif %}" style="{% if forloop.counter|divisibleby:6 or forloop.counter|divisibleby:7 %}background-color: #b0ffb0;{% endif %}">
+                    <b>{{ date.day }}</b>
+
+                    <div>
+                    {% for slot in slots %}
+                        {% if slot.date.day == date.day %}
+                            {% if slot.user and slot.user != request.user %}
+                                {{ slot.user.username }}
+                            {% elif slot.user %}
+                                <span style="color:#000080">{{ slot.user.username }}</span>
+                            {% else %}
+                                <input type="checkbox" name="slot_{{ slot.pk }}"> {{ slot.date.time }} {{ slot.type_str }}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+
+
+    <form method=post action="/Weekend">
+        <input type=hidden name=team value=euro-xr-rp>
+        <input type=hidden name=year value=2018>
+        <input type=hidden name=month value=08>
+        <input type=hidden name=username value=svoropae>
+
+        <p>
+        <table>
+            <tr><td colspan=2>
+                <table border=1 cellspacing=1 cellpadding=3 bgcolor=white>
+                    <caption><b>August 2018</b></caption>
+                    <thead>
+                    <tr>
+                        <td bgcolor="#d0d0ff">Monday</td>
+                        <td bgcolor="#d0d0ff">Tuesday</td>
+                        <td bgcolor="#d0d0ff">Wednesday</td>
+                        <td bgcolor="#d0d0ff">Thursday</td>
+                        <td bgcolor="#d0d0ff">Friday</td>
+                        <td bgcolor="#d0d0ff">Saturday</td>
+                        <td bgcolor="#d0d0ff">Sunday</td>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td colspan=2>&nbsp;</td>
+                        <td valign=top><b>01</b></td>
+                        <td valign=top><b>02</b></td>
+                        <td valign=top><b>03</b></td>
+                        <td bgcolor=#b0ffb0 valign=top><b>04</b> wk 3p</b></font><br>
+                            hbruyere<br>
+                            mohamede<br>
+                            maazkhan</td>
+                        <td bgcolor=#b0ffb0 valign=top><b>05</b> wk 3p</b></font><br>
+                            mohamede<br>
+                            njalilva<br>
+                            rhuseyno</td>
+                    </tr>
+
+                    <tr>
+                        <td valign=top><b>06</b></td>
+                        <td valign=top><b>07</b></td>
+                        <td valign=top><b>08</b></td>
+                        <td valign=top><b>09</b></td>
+                        <td valign=top><b>10</b></td>
+                        <td bgcolor=#b0ffb0 valign=top><b>11</b> wk 3p</b></font><br>
+                            maazkhan<br>
+                            <font color=#000080><b><input type=checkboxname=k1108svoropae/normal> svoropae</b></font><br>
+                            ekhabaro</b></font></td>
+                        <td bgcolor=#b0ffb0 valign=top><b>12</b> wk 3p</b></font><br>
+                            petrpetr<br>
+                            rhuseyno<br>
+                            dimikhai</td>
+                    </tr>
+
+                    <tr>
+                        <td valign=top><b>13</b></td>
+                        <td valign=top><b>14</b></td>
+                        <td bgcolor=yellow valign=top><b>15</b> wk 5p</b></font><br>
+                            maazkhan<br>
+                            vdeviatk<br>
+                            ekrdzevi<br>
+                            fpedraci<br>
+                            <font color=#000080><b><input type=checkboxname=k1508svoropae/normal> svoropae</b></font></td>
+                        <td valign=top><b>16</b></td>
+                        <td valign=top><b>17</b></td>
+                        <td bgcolor=#b0ffb0 valign=top><b>18</b> wk 3p</b></font><br>
+                            hbruyere<br>
+                            dimikhai<br>
+                            tageev</td>
+                        <td bgcolor=#b0ffb0 valign=top><b>19</b> wk 3p</b></font><br>
+                            <font color=#000080><b><input type=checkboxname=k1908svoropae/normal> svoropae</b></font><br>
+                            ekhabaro</b></font><br>
+                            rhuseyno</b></font></td>
+                    </tr>
+
+                    <tr>
+                        <td valign=top><b>20</b></td>
+                        <td valign=top><b>21</b></td>
+                        <td valign=top><b>22</b></td>
+                        <td valign=top><b>23</b></td>
+                        <td valign=top><b>24</b></td>
+                        <td bgcolor=#b0ffb0 valign=top><b>25</b> wk 3p</b></font><br>
+                            ivamushe<br>
+                            ekhabaro<br>
+                            maazkhan</td>
+                        <td bgcolor=#b0ffb0 valign=top><b>26</b> wk 3p</b></font><br>
+                            ivamushe<br>
+                            rhuseyno<br>
+                            fpedraci</td>
+                    </tr>
+
+                    <tr>
+                        <td valign=top><b>27</b></td>
+                        <td valign=top><b>28</b></td>
+                        <td valign=top><b>29</b></td>
+                        <td valign=top><b>30</b></td>
+                        <td valign=top><b>31</b></td>
+                    </tr>
+                    </tbody>
+                </table>
+        </p>
+
+        </td></tr>
+
+        <tr><td>
+            <b>15 August:</b> Holiday<br>
+        </td>
+            <td align=right>
+                <sub>&lt;<u><a href="/Weekend?team=euro-xr-rp&year=2018&month=07">July</a></u></sub>
+                <sup><u><a href="/Weekend?team=euro-xr-rp&year=2018">2018</a></u></sup>
+                <sub><u><a href="/Weekend?team=euro-xr-rp&year=2018&month=09">September</a></u>&gt;</sub>
+            </td></tr>
+        </table>
+
+        <p><font size=-1><b>/B</b> = Beeper<br><b>/S</b> = Special ( 12 hour shift)</font></p><input type=checkbox name=e08> Send me the August shift by email<br>
+        <input type=checkbox name=mostats> Show morning shifts stats for the month<br>
+
+        <p><table>
+        <tr><td><input type=submit value="Submit your selection">
+            <input type=reset value="Reset changes"></td></tr>
+    </table>
+
+    </form>
+
+    <hr>
+
+    <table width="100%">
+        <tr valign=top>
+            <td><font size=-2><b>This page was generated by a Million of Ultra Geese for <a href="/Weekend?team=euro-xr-rp&year=2018&mode=useredit">svoropae</a></b></font><br><font size=-1><b>Give <a style="text-decoration:none" href="http://www-tac.cisco.com/Teams/ks/feedback/feedback.php?toolname=WE-Shift">Feedback</a></b></font></td>
+            <td align=right><address>Shift questions? <a href="mailto:fducombl@cisco.com?Subject=Regarding%20the%20Euro-XR-RP%20shift">Mr. Anonymous</a><br>
+                <font size=-1>Comments? <a href="mailto:gsoltesz@cisco.com,reint@cisco.com?Subject=Q.%20About%20the%20Reservation%20tool%20">the authors</a></font>
+            </address></td>
+        </tr>
+    </table>
+
+{% endblock %}
