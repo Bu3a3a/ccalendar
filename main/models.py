@@ -1,5 +1,7 @@
+# encoding: utf-8
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 
 class CommonModel(models.Model):
@@ -8,6 +10,31 @@ class CommonModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class ShiftModelManager(models.Manager):
+
+    def for_user(self, user=None):
+        return self.get_queryset().filter(user=user).select_related('user', 'day')
+
+    def for_period(self, day=None, month=None, year=None, user=None, only_shown=True):
+
+        queryset = self.for_user(user)
+
+        if day:
+            queryset = queryset.filter(day__date__day=day)
+
+        if month:
+            queryset = queryset.filter(day__date__month=month)
+
+        if year:
+            queryset = queryset.filter(day__date__year=year)
+
+        if only_shown:
+            current_datetime = timezone.now()
+            queryset = queryset.filter(day__show_datetime__lte=current_datetime)
+
+        return queryset
 
 
 class ShiftModel(CommonModel):
@@ -21,6 +48,8 @@ class ShiftModel(CommonModel):
     type = models.IntegerField(choices=TYPE_CHOICES)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     day = models.ForeignKey('ShiftDayModel', on_delete=models.CASCADE)
+
+    objects = ShiftModelManager()
 
     @property
     def type_str(self):
@@ -37,6 +66,36 @@ class ShiftModel(CommonModel):
         unique_together = ('user', 'day')
 
 
+class ShiftDayModelManager(models.Manager):
+
+    def for_period(self, day=None, month=None, year=None, available_for_user=None, only_shown=True, only_future=False):
+
+        queryset = self.get_queryset()
+
+        if day:
+            queryset = queryset.filter(date__day=day)
+
+        if month:
+            queryset = queryset.filter(date__month=month)
+
+        if year:
+            queryset = queryset.filter(date__year=year)
+
+        if only_shown:
+            current_datetime = timezone.now()
+            queryset = queryset.filter(show_datetime__lte=current_datetime)
+
+        if only_future:
+            current_datetime = timezone.now()
+            queryset = queryset.filter(date__gte=current_datetime)
+
+        if available_for_user:
+            queryset = queryset.exclude(shiftmodel__user__exact=available_for_user)
+
+        return queryset
+
+
+
 class ShiftDayModel(CommonModel):
     TYPE_CHOICES = (
         (0, 'weekend'),
@@ -46,8 +105,10 @@ class ShiftDayModel(CommonModel):
     TYPE_CHOICES_DICT = {item[0]: item[1] for item in TYPE_CHOICES}
 
     type = models.IntegerField(choices=TYPE_CHOICES)
-    date = models.DateField()
+    date = models.DateField(unique=True)
     show_datetime = models.DateTimeField()
+
+    objects = ShiftDayModelManager()
 
     @property
     def type_str(self):

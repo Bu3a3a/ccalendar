@@ -2,6 +2,8 @@
 
 {% load i18n %}
 
+{% load get_item %}
+
 
 {% block bgcolor %}white{% endblock %}
 
@@ -23,30 +25,64 @@
                 <th>{% trans "Sunday" %}</th>
             </tr>
         </thead>
-        {% for week in calendar %}
-            <tr>
-            {% for date in week %}
-                <td class="{% if date.month != month %}text-muted{% endif %}" style="{% if forloop.counter|divisibleby:6 or forloop.counter|divisibleby:7 %}background-color: #b0ffb0;{% endif %}">
-                    <b>{{ date.day }}</b>
+{#        {% for week in calendar %}#}
+{#            <tr>#}
+{#            {% for date in week %}#}
+{#                <td class="{% if date.month != month %}text-muted{% endif %}" style="{% if forloop.counter|divisibleby:6 or forloop.counter|divisibleby:7 %}background-color: #b0ffb0;{% endif %}">#}
+{#                    <b>{{ date.day }}</b>#}
+{##}
+{#                    <div>#}
+{#                    {% for shift in shifts %}#}
+{#                        {% if shift.day.date.day == date.day %}#}
+{#                            {% if shift.user and shift.user != request.user %}#}
+{#                                {{ shift.user.username }}#}
+{#                            {% elif shift.user %}#}
+{#                                <span style="color:#000080">{{ shift.user.username }}</span>#}
+{#                            {% else %}#}
+{#                                <input type="checkbox" name="slot_{{ shift.pk }}"> {{ shift.day.date.time }} {{ shift.type_str }}#}
+{#                            {% endif %}#}
+{#                        {% endif %}#}
+{#                    {% endfor %}#}
+{#                    </div>#}
+{##}
+{#                </td>#}
+{#            {% endfor %}#}
+{#            </tr>#}
+{#        {% endfor %}#}
 
-                    <div>
-                    {% for slot in slots %}
-                        {% if slot.date.day == date.day %}
-                            {% if slot.user and slot.user != request.user %}
-                                {{ slot.user.username }}
-                            {% elif slot.user %}
-                                <span style="color:#000080">{{ slot.user.username }}</span>
-                            {% else %}
-                                <input type="checkbox" name="slot_{{ slot.pk }}"> {{ slot.date.time }} {{ slot.type_str }}
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                    </div>
+            {% for week in calendar %}
+                <tr>
+                {% for date in week %}
+                    {% with shiftdays_dict|get_item:date.day as shift_day %}
+                        <td class="{% if date.month != month %}text-muted{% endif %}" style="{% if shift_day.type_str == 'weekend' %}background-color: #b0ffb0;{% elif shift_day.type_str == 'holiday' %}background-color: cadetblue;{% elif shift_day.type_str == 'special' %}background-color: coral;{% endif %}">
+                            <b>{{ date.day }}</b>
 
-                </td>
-            {% endfor %}
-            </tr>
+                            <div>
+
+                                {% if shift_day %}
+
+                                    {% for shift in shifts_dict|get_item:date.day %}
+                                        {% if shift.user and shift.user != request.user %}
+                                            {{ shift.user.username }}
+                                        {% elif shift.user %}
+                                            <span style="color:#000080">{{ shift.user.username }}</span>
+                                        {% else %}
+                                            <input type="checkbox" name="slot_{{ shift.pk }}"> {{ shift.type_str }}
+                                        {% endif %}
+                                        <br>
+                                    {% endfor %}
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+                    {% endwith %}
+                {% endfor %}
+                </tr>
         {% endfor %}
+
+
     </table>
 
 

@@ -1,20 +1,24 @@
 # encoding: utf-8
+import datetime
+
 from django import forms
-from django.utils import timezone
 
-from main.models import ShiftModel
+from main import models
 
 
-class SlotIndexForm(forms.Form):
-    send_month_shift = forms.BooleanField(label='Send shifts for the current month', required=False)
+class ShiftTakeForm(forms.Form):
+    shift = forms.ModelChoiceField(models.ShiftModel.objects.for_period())
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        current_date = timezone.localtime()
-        year = int(kwargs.pop('year', current_date.year))
-        month = int(kwargs.pop('month', current_date.month))
-        empty_slots = ShiftModel.objects.filter(date__year=year, date__month=month, date_show__lte=current_date,
-                                               user=None)
-        for slot in empty_slots:
-            self.fields['slot_' + str(slot.pk)] = forms.CheckboxInput()
+
+class ShiftTakeByDateForm(forms.Form):
+    date = forms.DateField()
+    type = forms.ChoiceField(choices=models.ShiftModel.TYPE_CHOICES)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        ok_dates = models.ShiftDayModel.objects.for_period(only_future=True, only_shown=True, available_for_user=True)\
+            .values_list('date', flat=True)
+        if cleaned_data['date'] not in ok_dates:
+            raise forms.ValidationError('Выбранная дата недоступна для резервирования!')
+
 
