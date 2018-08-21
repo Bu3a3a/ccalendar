@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from django.views.generic import TemplateView, FormView
 
-from main.models import SlotModel
+from main.models import ShiftModel
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -27,7 +27,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context['month'] = month
         context['month_name'] = calendar.month_name[month]
         context['calendar'] = calendar.HTMLCalendar().monthdatescalendar(year, month)
-        context['slots'] = SlotModel.objects.filter(date__year=year, date__month=month, date_show__lte=current_date)\
+        context['slots'] = ShiftModel.objects.filter(date__year=year, date__month=month, date_show__lte=current_date)\
             .order_by('date')
         return context
 
